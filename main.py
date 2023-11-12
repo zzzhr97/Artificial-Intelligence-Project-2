@@ -30,6 +30,8 @@ class Gomoku(tk.Frame):
 
         # black -1, white 1
         self.color = tk.IntVar(value=-1)
+
+        # 每次self.color被改变时，都执行一次self.__robot()
         self.color.trace('w', self.__robot)
 
         # empty 0, black -1, white 1
@@ -228,6 +230,12 @@ def get_args():
         choices=["cpu", "gpu"],
         default="gpu",
         help="the device used",
+    )
+    parser.add_argument(
+        "--depth",
+        type=int,
+        default="2",
+        help="the maximum depth of one search for minimax",
     )
 
     args = parser.parse_args()

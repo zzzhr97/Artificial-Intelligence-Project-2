@@ -1,5 +1,6 @@
 import minimax
 import rl
+import numpy as np
 
 def robot(args, chessboard, robot_color, last_drop):
     # chessboard    a 15*15 ndarray, 0 is empty, -1 is black, 1 is white
@@ -8,6 +9,12 @@ def robot(args, chessboard, robot_color, last_drop):
 
     # RETURN:       a tuple (r,c), which is location of robot to drop piece in this turn
 
-    r, c = 0, 0
+    if args.ai == 'minimax':
+        r, c = minimax.get_drop(args, chessboard, robot_color, last_drop)
+    elif args.ai == 'rl':
+        r, c = rl.get_drop(args, chessboard, robot_color, last_drop)
+    else:
+        r, c = 0, 0
+
     return (r, c)
 
