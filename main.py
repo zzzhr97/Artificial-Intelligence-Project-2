@@ -4,11 +4,15 @@ import math
 from PIL import Image, ImageTk
 import random
 import algorithm
+import argparse
 
 
 class Gomoku(tk.Frame):
-    def __init__(self, master=None):
+    def __init__(self, args, master=None):
         super(Gomoku, self).__init__(master=master)
+
+        self.args = args
+
         sw = master.winfo_screenwidth()
         sh = master.winfo_screenheight()
         self.w = 650
@@ -132,7 +136,7 @@ class Gomoku(tk.Frame):
 
     def __robot(self, *args):
         if self.player_color != self.color.get() and self.start:
-            self.__draw_piece(algorithm.robot(self.chessboard, self.color.get(), self.last_drop))
+            self.__draw_piece(algorithm.robot(self.args, self.chessboard, self.color.get(), self.last_drop))
 
     def __is_win(self, pos):
         if self.__horizontal(pos):
@@ -207,8 +211,31 @@ class Gomoku(tk.Frame):
                 check.append(int(abs(sum(self.chessboard[row, col])) == 5))
         return sum(check) == 1
 
+def get_args():
+    """Get arguments from terminal"""
+    parser = argparse.ArgumentParser(description="Play Gomoku")
+
+    parser.add_argument(
+        "--ai",
+        type=str,
+        choices=["minimax", "rl"],
+        default="minimax",
+        help="the type of AI",
+    )
+    parser.add_argument(
+        "--device",
+        type=str,
+        choices=["cpu", "gpu"],
+        default="gpu",
+        help="the device used",
+    )
+
+    args = parser.parse_args()
+    return args
 
 if __name__ == '__main__':
+
+    args = get_args()
     root = tk.Tk()
-    app = Gomoku(master=root)
+    app = Gomoku(args=args, master=root)
     root.mainloop()
