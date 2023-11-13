@@ -1,6 +1,38 @@
 import numpy as np
 import random
 
+# max: black / -1, min: white / 1
+INF_VALUE = {-1: - 2 ** 16, 1: 2 ** 16 - 1}
+
+class State(object):
+
+    def __init__(self, board, color, last_drop, depth, shuffle=False):
+        self.board = np.array(board)
+        self.color = color          # this drop is by <color>
+        self.last_drop = last_drop  # last drop is by <-color>
+        self.depth = depth
+        self.shuffle = shuffle
+
+    def legal_drops(self):
+        """Get all the legal drops of the current state"""
+        drops = np.column_stack(np.where(self.board == 0))
+        if self.shuffle:
+            idx = np.random.permutation(drops.shape[0])
+            drops = drops[idx]
+        return drops
+
+    def next(self, drop):
+        """Return a new state after a given drop: [row, column]"""
+        new_board = np.array(self.board)
+        new_board[drop[0], drop[1]] = self.color
+        new_state = State(new_board,
+                        - self.color,
+                        drop,
+                        self.depth - 1,
+                        self.shuffle,
+        )
+        return new_state
+
 class ai(object):
     def __init__(self):
         pass
@@ -24,6 +56,9 @@ class ai(object):
         if self.__cont_diag(board, pos):
             return True
         return False
+
+    def is_full(self, board):
+        return np.sum(np.abs(board)) == 225
 
     def __horizontal(self, board, pos):
         r, c = pos

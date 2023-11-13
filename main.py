@@ -237,6 +237,23 @@ def get_args():
         default="2",
         help="the maximum depth of one search for minimax",
     )
+    parser.add_argument(
+        "--init_n",
+        type=int,
+        default="225",
+        help="the number of top drops to be considered for initial state",
+    )
+    parser.add_argument(
+        "--n",
+        type=int,
+        default="225",
+        help="the number of top drops to be considered for following state",
+    )
+    parser.add_argument(
+        "--shuffle",
+        action="store_true",
+        help="whether to shuffle the top drops",
+    )
 
     args = parser.parse_args()
     return args

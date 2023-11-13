@@ -11,8 +11,5 @@ def get_first_drop():
                 first_drops.append([i, j])
         return first_drops[random.randint(0, (high - low + 1) ** 2 - 1)]
 
-arr = np.zeros([15, 15])
-xx = ai()
-x = xx.is_win(arr, [0, 0])
-
-print(x)
+arr = np.array([[-1,1],[-1,1]])
+print(np.sum(np.abs(arr)))

@@ -1,5 +1,5 @@
 import numpy as np
-import minimax
+from ai import State, INF_VALUE
 
 def evaluate_func(state):
-    return 0
+    return INF_VALUE[-state.color] // 2
