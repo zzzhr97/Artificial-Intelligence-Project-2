@@ -23,7 +23,8 @@ class State(object):
 
     def next(self, drop):
         """Return a new state after a given drop: [row, column]"""
-        new_board = np.array(self.board)
+        # deep copy. otherwise the original board will be changed
+        new_board = np.array(self.board)   
         new_board[drop[0], drop[1]] = self.color
         new_state = State(new_board,
                         - self.color,
