@@ -254,6 +254,13 @@ def get_args():
         action="store_true",
         help="whether to shuffle the top drops",
     )
+    parser.add_argument(
+        "--mode",
+        type=str,
+        choices=["simple", "method1"],
+        default="simple",
+        help="the evaluation function to be used",
+    )
 
     args = parser.parse_args()
     return args

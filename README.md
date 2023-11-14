@@ -5,4 +5,5 @@
 v0.0: Test.  
 v0.1: Add basic files.  
 v0.2: Implement basic minimax alg. without eval.  
-v0.3: Implement basic minimax alg. to successfully test without eval.   
+v0.3: Implement basic minimax alg. to successfully test without eval.  
+v0.3.1: Add parameter about evaluate function and *TODO* to mark the code needed to be implemented.

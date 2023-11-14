@@ -1,5 +1,5 @@
 python main.py ^
 --ai minimax ^
---depth 4 ^
---init_n 50 ^
---n 50 ^
+--depth 2 ^
+--init_n 225 ^
+--n 225 ^

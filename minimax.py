@@ -39,13 +39,13 @@ class minimax(ai):
     
     def get_init_top_drops(self):
         """Get the top drops in given init_state through evaluation function"""
-
+        # TODO: implement evaluate function and sort drops
         top_drops = self.init_state.legal_drops()
         return top_drops[:self.args.init_n]
     
     def get_top_drops(self, states):
         """Get the top drops in given state through evaluation function"""
-        
+        # TODO: implement evaluate function and sort drops
         top_drops = states.legal_drops()
         return top_drops[:self.args.n]
 
@@ -58,7 +58,7 @@ class minimax(ai):
             return INF_VALUE[state.color]
         
         if state.depth == 0:
-            return evaluate_func(state)
+            return evaluate_func(state, mode=self.args.mode)
         
         value = INF_VALUE[state.color]
         
@@ -84,5 +84,4 @@ class minimax(ai):
 def get_drop(args, chessboard, robot_color, last_drop):
     """Get a drop from ai-minimax"""
     robot = minimax(args, chessboard, robot_color, last_drop)
-
     return robot.get_best_drop()
