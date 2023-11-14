@@ -1,5 +1,5 @@
 import numpy as np
-import random
+import random 
 
 # max: black / -1, min: white / 1
 INF_VALUE = {-1: - 2 ** 16, 1: 2 ** 16 - 1}
