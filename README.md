@@ -17,4 +17,6 @@ v0.3.1: Add parameter about evaluate function and *TODO* to mark the code needed
 
 v0.4: All *TODO* completed.
 
-v0.5: eval.py improved
+v0.5: eval.py improved.
+
+v0.5.1: Fix some bugs and upload a relatively complete version.
