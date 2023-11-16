@@ -2,7 +2,7 @@ import numpy as np
 import random 
 
 # max: black / -1, min: white / 1
-INF_VALUE = {-1: -999999, 1: 999999}
+INF_VALUE = {-1: -9999999, 1: 9999999}
 
 class State(object):
 

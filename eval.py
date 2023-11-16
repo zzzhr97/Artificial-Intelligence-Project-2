@@ -11,10 +11,10 @@ def evaluate_func(state, **kwargs):
     drops = kwargs['drops']
     last_evaluate = kwargs['last_evaluate']
     if mode=='simple':
-        return simple_evaluate(state, state.color)-simple_evaluate(state, -state.color)
+        return simple_evaluate(state, BLACK)-simple_evaluate(state, WHITE)
     elif mode=='method1':
-        return (method1_evaluate(state, state.color, drops, last_evaluate)
-                -method1_evaluate(state, -state.color, drops, last_evaluate))
+        return (method1_evaluate(state, BLACK, drops, last_evaluate)
+                -method1_evaluate(state, WHITE, drops, last_evaluate))
 
 
 def simple_evaluate(state, color):
@@ -63,9 +63,7 @@ def method1_evaluate(state, color, drops, last_evaluate):
     size = len(state.board)
     this_value = 0  # value about this drop after taking the drops
     last_value = 0  # value about this drop before taking the drops
-    last_state_board = state.board.copy()
-    for drop in drops:
-        last_state_board[drop[0], drop[1]] = EMPTY
+    last_state_board = np.array(state.board)
 
     # If this is the first invoke, calculate the whole board
     if last_evaluate is None:
@@ -86,6 +84,8 @@ def method1_evaluate(state, color, drops, last_evaluate):
     
     # Otherwise, only need to calculate the part that's affected by this drop
     # evaluate rows and columns
+    for drop in drops:
+        last_state_board[drop[0], drop[1]] = EMPTY
     for drop in drops:
         # evaluate rows and columns
         this_row = state.board[drop[0]]

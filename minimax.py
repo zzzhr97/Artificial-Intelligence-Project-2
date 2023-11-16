@@ -50,7 +50,7 @@ class minimax(ai):
                                                             drops=[x],
                                                             last_evaluate=self.init_evaluate,
                                                             mode=self.args.mode), 
-                                reverse=True)
+                                reverse=self.init_state.color == -1)
         # debug
         print(top_drops)
         return sorted_top_drops[:self.args.init_n] 
@@ -63,20 +63,17 @@ class minimax(ai):
                                                             drops=state.new_drops[1:]+[x],
                                                             last_evaluate=self.init_evaluate,
                                                             mode=self.args.mode), 
-                                reverse=True)
+                                reverse=state.color == -1)
         return sorted_top_drops[:self.args.n]
 
     def _minimax(self, state, a, b):
-        """Get the next best drop-value"""
-        # the last drop leads to winning, not this drop
-        if self.is_win(state.board, state.new_drops[-1]):
-            return INF_VALUE[state.color]
-        
-        if state.depth == 0:
-            return - evaluate_func(state, 
+        """Get the next best drop-value"""   
+        if state.depth == 0 or self.is_win(state.board, state.new_drops[-1]):
+            value = evaluate_func(state, 
                                 drops=state.new_drops[1:],
                                 last_evaluate=self.init_evaluate,
                                 mode=self.args.mode)
+            return value
         
         value = INF_VALUE[state.color]
         
