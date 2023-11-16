@@ -29,27 +29,31 @@ class State(object):
             self.adjacent_locations = np.zeros_like(self.board)
 
         # update adjacent locations
+        drops = []
+        _set_loc = lambda self, x=x, y=y: \
+            self.adjacent_locations.__setitem__((x, y), 1) \
+            if 0 <= x < len(self.board) and 0 <= y < len(self.board) else None
         for [x, y] in drops:
-            self._set_loc(x-1, y)
-            self._set_loc(x, y-1)
-            self._set_loc(x+1, y)
-            self._set_loc(x, y+1)
-            self._set_loc(x-1, y-1)
-            self._set_loc(x+1, y+1)
-            self._set_loc(x-1, y+1)
-            self._set_loc(x+1, y-1)
+            _set_loc(x-1, y)
+            _set_loc(x, y-1)
+            _set_loc(x+1, y)
+            _set_loc(x, y+1)
+            _set_loc(x-1, y-1)
+            _set_loc(x+1, y+1)
+            _set_loc(x-1, y+1)
+            _set_loc(x+1, y-1)
 
     def _set_loc(self, x, y):
         """Set the adjacent locations of the given location"""
         if 0 <= x < len(self.board) and 0 <= y < len(self.board):
-            self.adjacent_locations[x][y] = 1
+            self.adjacent_locations[x, y] = 1
 
     def legal_drops(self):
         """Get all the legal drops of the current state"""
-        #drops = np.column_stack(np.where(self.board == 0))
         # return the adjacent drops
         assert self.adjacent_locations is not None, "adjacent_locations is None"
-        drops = np.column_stack(np.where(np.logical_and(self.adjacent_locations == 1, self.board == 0)))
+        drops = np.column_stack(np.where(self.board == 0))
+        #drops = np.column_stack(np.where(np.logical_and(self.adjacent_locations == 1, self.board == 0)))
         if self.shuffle:
             idx = np.random.permutation(drops.shape[0])
             drops = drops[idx]

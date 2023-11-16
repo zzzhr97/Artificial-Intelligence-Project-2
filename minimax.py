@@ -49,6 +49,8 @@ class minimax(ai):
                                                             last_evaluate=self.init_evaluate,
                                                             mode=self.args.mode), 
                                 reverse=True)
+        # debug
+        print(top_drops)
         return sorted_top_drops[:self.args.init_n] 
     
     def get_top_drops(self, state):
