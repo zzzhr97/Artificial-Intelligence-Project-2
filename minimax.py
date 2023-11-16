@@ -24,12 +24,16 @@ class minimax(ai):
         print("Get init drops: Done.")
 
         with tqdm(total=len(drops), desc="Thinking...") as pbar:
+            # debug
+            drop_values = []
             for drop in drops:
                 if drop_value[0] == -1:
                     drop_value[:2] = drop[:2]
 
                 new_state = self.init_state.next(drop)
                 new_value = self._minimax(new_state, INF_VALUE[-1], INF_VALUE[1])
+                # debug
+                drop_values.append([drop[0], drop[1], new_value])
                 if self.init_state.color == -1: # black
                     if new_value > drop_value[-1]:
                         drop_value = [drop[0], drop[1], new_value]
@@ -40,31 +44,39 @@ class minimax(ai):
                 pbar.update(1)
             pbar.set_description('Done.')
 
+        # debug
+        print("Drops: ", drop_values)
+        print("Best drop: ", drop_values[np.argmax(np.array(drop_values)[:, 2])])
+
         return drop_value[:2]
     
     def get_init_top_drops(self):
         """Get the top drops in given init_state through evaluation function"""
         top_drops = self.init_state.legal_drops()
-        sorted_top_drops = sorted(top_drops, 
-                                key=lambda x: evaluate_func(self.init_state.next(x), 
-                                                            drops=[x],
-                                                            last_evaluate=self.init_evaluate,
-                                                            mode=self.args.mode), 
-                                reverse=self.init_state.color == -1)
-        # debug
-        print(top_drops)
-        return sorted_top_drops[:self.args.init_n] 
+        drop_value = []
+        for drop in top_drops:
+            value = evaluate_func(self.init_state.next(drop), 
+                                drops=[drop],
+                                last_evaluate=self.init_evaluate,
+                                mode=self.args.mode)
+            drop_value.append([drop[0], drop[1], value])
+        sorted_drop_value = sorted(drop_value, key=lambda x: x[-1], reverse=self.init_state.color == -1)
+        sorted_drops = [[x[0], x[1]] for x in sorted_drop_value[:self.args.init_n]]
+        return sorted_drops
     
     def get_top_drops(self, state):
         """Get the top drops in given state through evaluation function"""
         top_drops = state.legal_drops()
-        sorted_top_drops = sorted(top_drops, 
-                                key=lambda x: evaluate_func(state.next(x), 
-                                                            drops=state.new_drops[1:]+[x],
-                                                            last_evaluate=self.init_evaluate,
-                                                            mode=self.args.mode), 
-                                reverse=state.color == -1)
-        return sorted_top_drops[:self.args.n]
+        drop_value = []
+        for drop in top_drops:
+            value = evaluate_func(state.next(drop), 
+                                drops=state.new_drops[1:]+[drop],
+                                last_evaluate=self.init_evaluate,
+                                mode=self.args.mode)
+            drop_value.append([drop[0], drop[1], value])
+        sorted_drop_value = sorted(drop_value, key=lambda x: x[-1], reverse=state.color == -1)
+        sorted_drops = [[x[0], x[1]] for x in sorted_drop_value[:self.args.n]]
+        return sorted_drops
 
     def _minimax(self, state, a, b):
         """Get the next best drop-value"""   

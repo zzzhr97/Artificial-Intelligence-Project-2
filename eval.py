@@ -188,11 +188,23 @@ def calculate_score(consecutive, block_count, empty_inside):
         if empty_inside:
             return 10000
         return 100000
+
+    # very likely to win
+    if consecutive == 4 and block_count == 0:
+        if empty_inside:
+            return 3000
+        return 100000
+    
+    # likely to win
+    if consecutive == 3 and block_count == 0:
+        if empty_inside:
+            return 1000
+        return 10000
     
     # Common cases
-    consecutive_score = (2, 5, 1000, 10000)    # Corresponding scores for 1, 2, 3, 4 consecutive chess
-    block_count_score = (1, 0.6, 0.2)   # Number of blocks and correspoinding influence factor
-    empty_score = (1, 0.6, 0.8, 0.9)    # How much influence empty can make for 1, 2, 3, 4 consecutive chess cases
+    consecutive_score = (2, 5, 2000, 10000)    # Corresponding scores for 1, 2, 3, 4 consecutive chess
+    block_count_score = (1, 0.6, 0.01)   # Number of blocks and correspoinding influence factor
+    empty_score = (1, 0.8, 0.8, 1)    # How much influence empty can make for 1, 2, 3, 4 consecutive chess cases
 
     idx = consecutive-1
     value = consecutive_score[idx]

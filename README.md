@@ -20,3 +20,5 @@ v0.4: All *TODO* completed.
 v0.5: eval.py improved.
 
 v0.5.1: Fix some bugs and upload a relatively complete version.
+
+v0.5.2: Add some indicators to adjust parameters.
