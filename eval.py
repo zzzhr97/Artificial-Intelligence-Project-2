@@ -8,10 +8,13 @@ WHITE = 1
 def evaluate_func(state, **kwargs):
     # TODO: implement evaluate function
     mode = kwargs['mode']
+    drops = kwargs['drops']
+    last_evaluate = kwargs['last_evaluate']
     if mode=='simple':
         return simple_evaluate(state, state.color)-simple_evaluate(state, -state.color)
     elif mode=='method1':
-        return method1_evaluate(state, state.color)-method1_evaluate(state, -state.color)
+        return (method1_evaluate(state, state.color, drops, last_evaluate)
+                -method1_evaluate(state, -state.color, drops, last_evaluate))
 
 
 def simple_evaluate(state, color):
@@ -55,26 +58,84 @@ def simple_line_evaluate(line, color):
     return value
 
 
-def method1_evaluate(state, color):
+def method1_evaluate(state, color, drops, last_evaluate):
     """Evaluate the state using method 1"""
     size = len(state.board)
-    value = 0
+    this_value = 0  # value about this drop after taking the drops
+    last_value = 0  # value about this drop before taking the drops
+    last_state_board = state.board.copy()
+    for drop in drops:
+        last_state_board[drop[0], drop[1]] = EMPTY
 
+    # If this is the first invoke, calculate the whole board
+    if last_evaluate is None:
+        value = 0
+        # evaluate rows and columns
+        for i in range(size):
+            row = state.board[i]
+            col = state.board[:, i]
+            value += method1_line_evaluate(row, color)
+            value += method1_line_evaluate(col, color)
+        # evaluate diagonals
+        for i in range(-(size-5), size-4):
+            diag = np.diag(state.board, k=i)
+            cont_diag = np.diag(np.fliplr(state.board), k=i)
+            value += method1_line_evaluate(diag, color)
+            value += method1_line_evaluate(cont_diag, color)
+        return value
+    
+    # Otherwise, only need to calculate the part that's affected by this drop
     # evaluate rows and columns
-    for i in range(size):
-        row = state.board[i]
-        col = state.board[:, i]
-        value += method1_line_evaluate(row, color)
-        value += method1_line_evaluate(col, color)
-        
-    # evaluate diagonals
-    for i in range(-(size-5), size-4):
-        diag = np.diag(state.board, k=i)
-        cont_diag = np.diag(np.fliplr(state.board), k=i)
-        value += method1_line_evaluate(diag, color)
-        value += method1_line_evaluate(cont_diag, color)
+    for drop in drops:
+        # evaluate rows and columns
+        this_row = state.board[drop[0]]
+        this_col = state.board[:, drop[1]]
+        last_row = last_state_board[drop[0]]
+        last_col = last_state_board[:, drop[1]]
+        this_value += method1_line_evaluate(this_row, color)
+        this_value += method1_line_evaluate(this_col, color)    
+        last_value += method1_line_evaluate(last_row, color)
+        last_value += method1_line_evaluate(last_col, color)
+        # evaluate diagonals
+        this_diag = get_diag(state.board, drop)
+        this_cont_diag = get_cont_diag(state.board, drop)
+        last_diag = get_diag(last_state_board, drop)
+        last_cont_diag = get_cont_diag(last_state_board, drop)
+        if (this_diag is None or 
+            this_cont_diag is None or 
+            last_diag is None or 
+            last_cont_diag is None):
+            continue
+        this_value += method1_line_evaluate(this_diag, color)
+        this_value += method1_line_evaluate(this_cont_diag, color)
+        last_value += method1_line_evaluate(last_diag, color)
+        last_value += method1_line_evaluate(last_cont_diag, color)
+    return last_evaluate-last_value+this_value
 
-    return value
+
+def get_diag(board, pos):
+    """Get the diagonal line passing the position in a board"""
+    size = len(board)
+    if pos[0] > size-5 and pos[1] < 4:
+        return None
+    if pos[0] < 4 and pos[1] > size-5:
+        return None
+    offset = pos[1] - pos[0]
+    return np.diag(board, k=offset)
+
+
+def get_cont_diag(board, pos):
+    """Get the diagonal line with different direction passing the position in a board"""
+    size = len(board)
+    if pos[0] < 4 and pos[1] < 4:
+        return None
+    if pos[0] > size-5 and pos[1] > size-5:
+        return None
+    if pos[0] >= pos[1]:
+        offset = -(size-1-(pos[0]-pos[1]))
+    else:
+        offset = size-1-(pos[1]-pos[0])
+    return np.diag(np.fliplr(board), k=offset)
 
 
 def method1_line_evaluate(line, color):
