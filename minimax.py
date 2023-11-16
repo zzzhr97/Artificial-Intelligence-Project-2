@@ -7,16 +7,19 @@ class minimax(ai):
 
     def __init__(self, args, chessboard, robot_color, last_drop):
         super(minimax, self).__init__()
-        self.init_state = State(chessboard, robot_color, last_drop, args.depth, args.shuffle)
+        self.init_state = State(chessboard, robot_color, last_drop, args.depth, None, None, args.shuffle)
         self.args = args
+        self.init_evaluate = evaluate_func(self.init_state, drops=None, last_evaluate=None, mode=self.args.mode)
 
     def get_best_drop(self):
         """Get the best drop in given init_state"""
         if np.sum(abs(self.init_state.board)) == 0:
             return self.get_first_drop()
         
+        print("Get init drops...")
         drop_value = [-1, -1, INF_VALUE[self.init_state.color]]
         drops = self.get_init_top_drops()
+        print("Get init drops: Done.")
 
         with tqdm(total=len(drops), desc="Thinking...") as pbar:
             for drop in drops:
@@ -39,32 +42,37 @@ class minimax(ai):
     
     def get_init_top_drops(self):
         """Get the top drops in given init_state through evaluation function"""
-        # TODO: implement evaluate function and sort drops
         top_drops = self.init_state.legal_drops()
         sorted_top_drops = sorted(top_drops, 
-                                  key=lambda x: evaluate_func(self.init_state.next(x), mode=self.args.mode), 
-                                  reverse=True)
+                                key=lambda x: evaluate_func(self.init_state.next(x), 
+                                                            drops=[x],
+                                                            last_evaluate=self.init_evaluate,
+                                                            mode=self.args.mode), 
+                                reverse=True)
         return sorted_top_drops[:self.args.init_n] 
     
-    def get_top_drops(self, states):
+    def get_top_drops(self, state):
         """Get the top drops in given state through evaluation function"""
-        # TODO: implement evaluate function and sort drops
-        top_drops = states.legal_drops()
+        top_drops = state.legal_drops()
         sorted_top_drops = sorted(top_drops, 
-                                  key=lambda x: evaluate_func(states.next(x), mode=self.args.mode), 
-                                  reverse=True)
+                                key=lambda x: evaluate_func(state.next(x), 
+                                                            drops=state.new_drops[1:]+[x],
+                                                            last_evaluate=self.init_evaluate,
+                                                            mode=self.args.mode), 
+                                reverse=True)
         return sorted_top_drops[:self.args.n]
 
     def _minimax(self, state, a, b):
         """Get the next best drop-value"""
         # the last drop leads to winning, not this drop
-        if self.is_win(state.board, state.last_drop):
-            # debug
-            #print(f"win! color: {-state.color}\tdrop: {state.last_drop}")
+        if self.is_win(state.board, state.new_drops[-1]):
             return INF_VALUE[state.color]
         
         if state.depth == 0:
-            return evaluate_func(state, mode=self.args.mode)
+            return evaluate_func(state, 
+                                drops=state.new_drops[1:],
+                                last_evaluate=self.init_evaluate,
+                                mode=self.args.mode)
         
         value = INF_VALUE[state.color]
         

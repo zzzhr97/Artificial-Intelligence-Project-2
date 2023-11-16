@@ -1,5 +1,6 @@
 python main.py ^
 --ai minimax ^
---depth 2 ^
---init_n 225 ^
---n 225 ^
+--depth 4 ^
+--init_n 10 ^
+--n 20 ^
+--mode method1 ^

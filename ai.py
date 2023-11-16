@@ -6,16 +6,50 @@ INF_VALUE = {-1: - 2 ** 16, 1: 2 ** 16 - 1}
 
 class State(object):
 
-    def __init__(self, board, color, last_drop, depth, shuffle=False):
+    def __init__(self, board, color, last_drop, depth, new_drops=None, locs=None, shuffle=False):
         self.board = np.array(board)
-        self.color = color          # this drop is by <color>
-        self.last_drop = last_drop  # last drop is by <-color>
+        self.color = color          
+        # this drop is by <color>
+        # last drop is by <-color>
+
+        if new_drops is None:
+            self.new_drops = []
+        else:
+            self.new_drops = list(new_drops)    # deep copy
+        self.new_drops.append(last_drop)
+
         self.depth = depth
         self.shuffle = shuffle
 
+        if locs is not None:
+            drops = [last_drop]
+            self.adjacent_locations = np.array(locs)
+        else:
+            drops = np.column_stack(np.where(self.board != 0))
+            self.adjacent_locations = np.zeros_like(self.board)
+
+        # update adjacent locations
+        for [x, y] in drops:
+            self._set_loc(x-1, y)
+            self._set_loc(x, y-1)
+            self._set_loc(x+1, y)
+            self._set_loc(x, y+1)
+            self._set_loc(x-1, y-1)
+            self._set_loc(x+1, y+1)
+            self._set_loc(x-1, y+1)
+            self._set_loc(x+1, y-1)
+
+    def _set_loc(self, x, y):
+        """Set the adjacent locations of the given location"""
+        if 0 <= x < len(self.board) and 0 <= y < len(self.board):
+            self.adjacent_locations[x][y] = 1
+
     def legal_drops(self):
         """Get all the legal drops of the current state"""
-        drops = np.column_stack(np.where(self.board == 0))
+        #drops = np.column_stack(np.where(self.board == 0))
+        # return the adjacent drops
+        assert self.adjacent_locations is not None, "adjacent_locations is None"
+        drops = np.column_stack(np.where(np.logical_and(self.adjacent_locations == 1, self.board == 0)))
         if self.shuffle:
             idx = np.random.permutation(drops.shape[0])
             drops = drops[idx]
@@ -25,11 +59,13 @@ class State(object):
         """Return a new state after a given drop: [row, column]"""
         new_board = np.array(self.board)
         new_board[drop[0], drop[1]] = self.color
-        new_state = State(new_board,
-                        - self.color,
-                        drop,
-                        self.depth - 1,
-                        self.shuffle,
+        new_state = State(board=new_board,
+                        color=-self.color,
+                        last_drop=drop,
+                        depth=self.depth-1,
+                        new_drops=self.new_drops,
+                        locs=self.adjacent_locations,
+                        shuffle=self.shuffle,
         )
         return new_state
 
