@@ -15,6 +15,8 @@ class minimax(ai):
         """Get the best drop in given init_state"""
         if np.sum(abs(self.init_state.board)) == 0:
             return self.get_first_drop()
+        if np.sum(abs(self.init_state.board)) == 1:
+            return self.get_second_drop(self.init_state.board)
         
         print("Get init drops...")
         drop_value = [-1, -1, INF_VALUE[self.init_state.color]]
@@ -71,7 +73,7 @@ class minimax(ai):
             return INF_VALUE[state.color]
         
         if state.depth == 0:
-            return evaluate_func(state, 
+            return - evaluate_func(state, 
                                 drops=state.new_drops[1:],
                                 last_evaluate=self.init_evaluate,
                                 mode=self.args.mode)

@@ -2,7 +2,7 @@ import numpy as np
 import random 
 
 # max: black / -1, min: white / 1
-INF_VALUE = {-1: - 2 ** 16, 1: 2 ** 16 - 1}
+INF_VALUE = {-1: -999999, 1: 999999}
 
 class State(object):
 
@@ -29,8 +29,8 @@ class State(object):
             self.adjacent_locations = np.zeros_like(self.board)
 
         # update adjacent locations
-        drops = []
-        _set_loc = lambda self, x=x, y=y: \
+        #drops = []
+        _set_loc = lambda x, y: \
             self.adjacent_locations.__setitem__((x, y), 1) \
             if 0 <= x < len(self.board) and 0 <= y < len(self.board) else None
         for [x, y] in drops:
@@ -52,8 +52,8 @@ class State(object):
         """Get all the legal drops of the current state"""
         # return the adjacent drops
         assert self.adjacent_locations is not None, "adjacent_locations is None"
-        drops = np.column_stack(np.where(self.board == 0))
-        #drops = np.column_stack(np.where(np.logical_and(self.adjacent_locations == 1, self.board == 0)))
+        #drops = np.column_stack(np.where(self.board == 0))
+        drops = np.column_stack(np.where(np.logical_and(self.adjacent_locations == 1, self.board == 0)))
         if self.shuffle:
             idx = np.random.permutation(drops.shape[0])
             drops = drops[idx]
@@ -85,6 +85,17 @@ class ai(object):
             for j in range(low, high + 1):
                 first_drops.append([i, j])
         return first_drops[random.randint(0, (high - low + 1) ** 2 - 1)]
+    
+    def get_second_drop(self, board):
+        low = 6
+        high = 8
+        first_drop = np.column_stack(np.where(board != 0))[0]
+        second_drops = []
+        for i in range(low, high + 1):
+            for j in range(low, high + 1):
+                if first_drop[0] != i or first_drop[1] != j:
+                    second_drops.append([i, j])
+        return second_drops[random.randint(0, (high - low + 1) ** 2 - 2)]
 
     def is_win(self, board, pos):
         if self.__horizontal(board, pos):
