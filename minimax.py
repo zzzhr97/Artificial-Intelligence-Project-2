@@ -41,13 +41,19 @@ class minimax(ai):
         """Get the top drops in given init_state through evaluation function"""
         # TODO: implement evaluate function and sort drops
         top_drops = self.init_state.legal_drops()
-        return top_drops[:self.args.init_n]
+        sorted_top_drops = sorted(top_drops, 
+                                  key=lambda x: evaluate_func(self.init_state.next(x), mode=self.args.mode), 
+                                  reverse=True)
+        return sorted_top_drops[:self.args.init_n] 
     
     def get_top_drops(self, states):
         """Get the top drops in given state through evaluation function"""
         # TODO: implement evaluate function and sort drops
         top_drops = states.legal_drops()
-        return top_drops[:self.args.n]
+        sorted_top_drops = sorted(top_drops, 
+                                  key=lambda x: evaluate_func(states.next(x), mode=self.args.mode), 
+                                  reverse=True)
+        return sorted_top_drops[:self.args.n]
 
     def _minimax(self, state, a, b):
         """Get the next best drop-value"""
