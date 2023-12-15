@@ -46,7 +46,10 @@ class minimax(ai):
 
         # debug
         print("Drops: ", drop_values)
-        print("Best drop: ", drop_values[np.argmax(np.array(drop_values)[:, 2])])
+        if self.init_state.color == -1:
+            print("Best drop: ", drop_values[np.argmax(np.array(drop_values)[:, 2])])
+        else:
+            print("Best drop: ", drop_values[np.argmin(np.array(drop_values)[:, 2])])
 
         return drop_value[:2]
     
@@ -85,6 +88,9 @@ class minimax(ai):
                                 drops=state.new_drops[1:],
                                 last_evaluate=self.init_evaluate,
                                 mode=self.args.mode)
+            # debug
+            #if self.is_win(state.board, state.new_drops[-1]):
+                #print(f"{-state.color} win: {state.new_drops}, {value}")
             return value
         
         value = INF_VALUE[state.color]
