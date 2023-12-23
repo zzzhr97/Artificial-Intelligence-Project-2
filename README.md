@@ -26,3 +26,5 @@
   - Improve `README.md` and add `.gitignore`
 - *v0.6.0*:
   - Restore to initial eval function due to some bugs in developed eval function.
+- *v1.0.0*:
+  - Finish RL part.

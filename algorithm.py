@@ -1,5 +1,5 @@
-import minimax
-import rl
+import minimax.minimax as minimax
+import RL.rl as rl
 import numpy as np
 
 def robot(args, chessboard, robot_color, last_drop):
