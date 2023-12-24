@@ -30,18 +30,18 @@ class State(object):
 
         # update adjacent locations
         #drops = []
-        _set_loc = lambda x, y: \
-            self.adjacent_locations.__setitem__((x, y), 1) \
-            if 0 <= x < len(self.board) and 0 <= y < len(self.board) else None
+        # _set_loc = lambda x, y: \
+        #     self.adjacent_locations.__setitem__((x, y), 1) \
+        #     if 0 <= x < len(self.board) and 0 <= y < len(self.board) else None
         for [x, y] in drops:
-            _set_loc(x-1, y)
-            _set_loc(x, y-1)
-            _set_loc(x+1, y)
-            _set_loc(x, y+1)
-            _set_loc(x-1, y-1)
-            _set_loc(x+1, y+1)
-            _set_loc(x-1, y+1)
-            _set_loc(x+1, y-1)
+            self._set_loc(x-1, y)
+            self._set_loc(x, y-1)
+            self._set_loc(x+1, y)
+            self._set_loc(x, y+1)
+            self._set_loc(x-1, y-1)
+            self._set_loc(x+1, y+1)
+            self._set_loc(x-1, y+1)
+            self._set_loc(x+1, y-1)
 
     def _set_loc(self, x, y):
         """Set the adjacent locations of the given location"""

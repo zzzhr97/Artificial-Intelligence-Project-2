@@ -6,3 +6,6 @@ RL/test.ipynb
 res/
 resources/
 play.bat
+logs/
+models/
+.DS_Store

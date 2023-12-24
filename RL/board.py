@@ -298,7 +298,7 @@ class Game(object):
             end, winner = self.board.game_end()
             if end:
                 if is_shown:
-                    if winner != -1:
+                    if winner != 0:
                         print("Game end. Winner is", players[winner])
                     else:
                         print("Game end. Tie")

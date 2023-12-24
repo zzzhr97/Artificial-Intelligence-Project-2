@@ -231,6 +231,8 @@ def get_args():
         default="gpu",
         help="the device used",
     )
+
+    # Minimax
     parser.add_argument(
         "--depth",
         type=int,
@@ -248,6 +250,12 @@ def get_args():
         type=int,
         default="225",
         help="the number of top drops to be considered for following state",
+    )
+    parser.add_argument(
+        "--eval_legal_drops",
+        type=int,
+        default="1",
+        help="whether to evaluate legal drops in each expansion",
     )
     parser.add_argument(
         "--shuffle",

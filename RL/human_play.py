@@ -1,5 +1,4 @@
 # DEL
-import pickle
 from board import Board, Game
 from mcts_pure import MCTSPlayer as MCTS_Pure
 from mcts_alphaZero import MCTSPlayer
@@ -8,7 +7,7 @@ from PVNet import PolicyValueNet
 BLACK = -1
 WHITE = 1
 total_players = {BLACK: "BLACK", WHITE: "WHITE"}
-load_path = 'best_policy.model'
+load_path = './RL/models/policy_best_epoch0050.pth'
 
 class Human(object):
     """
@@ -53,16 +52,11 @@ def run():
 
         # load the provided model (trained in Theano/Lasagne) into a MCTS player written in pure numpy
 
-        # try:
-        #     policy_param = pickle.load(open(load_path, 'rb'))
-        # except:
-        #     policy_param = pickle.load(open(load_path, 'rb'),
-        #                             encoding='bytes')  # To support python3
-        # best_policy = PolicyValueNet(width, height, policy_param)
-        # mcts_player = MCTSPlayer(best_policy.policy_value_fn, c_puct=5, n_playout=1000) 
+        best_policy = PolicyValueNet(load_path=load_path)
+        mcts_player = MCTSPlayer(best_policy.policy_value_fn, c_puct=5, n_playout=1000) 
 
-        # uncomment the following line to play with pure MCTS (it's much weaker even with a larger n_playout)
-        mcts_player = MCTS_Pure(c_puct=5, n_playout=1000)
+        # # uncomment the following line to play with pure MCTS (it's much weaker even with a larger n_playout)
+        # mcts_player = MCTS_Pure(c_puct=5, n_playout=1000)
 
         # human player, input your move in the format: 2,3
         human = Human()

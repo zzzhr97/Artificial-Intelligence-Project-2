@@ -1,0 +1,7 @@
+# .gitattributes
+
+# 设置.sh文件使用LF作为行结束符
+*.sh eol=lf
+
+# 设置其他文件使用Git的默认行结束符设置
+* text=auto

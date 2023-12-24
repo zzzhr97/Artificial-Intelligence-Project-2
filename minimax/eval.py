@@ -5,10 +5,22 @@ BLACK = -1
 EMPTY = 0
 WHITE = 1
 
+# Scores for different situations in eval funciton
+consecutive_score = (2, 5, 1000, 10000)    # Corresponding scores for 1, 2, 3, 4 consecutive chess
+block_count_score = (1, 0.6, 0.2)   # Number of blocks and correspoinding influence factor
+empty_score = (1, 0.6, 0.8, 0.9)    # How much influence empty can make for 1, 2, 3, 4 consecutive chess cases
+
+# Weights for current color and opponent color
+current_score = (0.6, 1)    # current_color == color --> 1.0, current_color != color --> 0.6
+
 def evaluate_func(state, **kwargs):
     mode = kwargs['mode']
     drops = kwargs['drops']
     last_evaluate = kwargs['last_evaluate']
+
+    global current_color
+    current_color = state.color
+
     if mode=='simple':
         return simple_evaluate(state, BLACK)-simple_evaluate(state, WHITE)
     elif mode=='method1':
@@ -112,6 +124,9 @@ def method1_line_evaluate(line, color):
     
     if consecutive>0:
         value += calculate_score(consecutive, block_count, empty_inside)
+
+    # modify weight according to current color
+    value *= current_score[current_color == color]
     
     return value
 
@@ -129,11 +144,6 @@ def calculate_score(consecutive, block_count, empty_inside):
             return 10000
         return 100000
     
-    # Common cases
-    consecutive_score = (2, 5, 1000, 10000)    # Corresponding scores for 1, 2, 3, 4 consecutive chess
-    block_count_score = (1, 0.6, 0.2)   # Number of blocks and correspoinding influence factor
-    empty_score = (1, 0.6, 0.8, 0.9)    # How much influence empty can make for 1, 2, 3, 4 consecutive chess cases
-
     idx = consecutive-1
     value = consecutive_score[idx]
     value *= block_count_score[block_count]
