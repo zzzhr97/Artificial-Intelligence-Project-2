@@ -2,9 +2,7 @@ import torch
 import torch.nn as nn
 from network import SimpleNet, SimpleResNet
 
-# from RL.Net import Net as Net
-
-_model = SimpleNet(4)
+_model = SimpleResNet(4)
 
 class Net(nn.Module):
     def __init__(self, model=_model):

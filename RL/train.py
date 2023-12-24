@@ -11,6 +11,8 @@ from tqdm import tqdm
 import time
 import logging
 
+model_num = 'Res'
+
 save_path = './RL/models'
 log_path = './RL/logs'
 
@@ -55,7 +57,7 @@ class TrainPipeline():
         self.pure_mcts_playout_num = 1000
 
         # policy value network
-        self.policy_value_net = PolicyValueNet(load_path=load_path)
+        self.policy_value_net = PolicyValueNet(load_path=load_path, use_gpu=True)
             
         self.mcts_player = MCTSPlayer(
             self.policy_value_net.policy_value_fn,
@@ -160,7 +162,7 @@ class TrainPipeline():
             "[kl:{:.5f}] "
             "[lr_multiplier:{:.3f}] "
             "[loss:{:.5f}] "
-            "[entropy:{:.5f}]"
+            "[entropy:{:.5f}] "
             "[explained_var_old:{:.3f}] "
             "[explained_var_new:{:.3f}] "
             ).format(kl,
@@ -174,7 +176,7 @@ class TrainPipeline():
             "[kl:{:.5f}] "
             "[lr_multiplier:{:.3f}] "
             "[loss:{:.5f}] "
-            "[entropy:{:.5f}]"
+            "[entropy:{:.5f}] "
             "[explained_var_old:{:.3f}] "
             "[explained_var_new:{:.3f}] "
             ).format(kl,
@@ -246,13 +248,13 @@ class TrainPipeline():
                     print(f"[Batch {i+1:04d}]")
                     logging.info(f"[Batch {i+1:04d}]")
                     win_ratio = self.policy_evaluate()
-                    self.policy_value_net.save_model(f'{save_path}/policy_epoch{i+1:04d}.pth')
+                    self.policy_value_net.save_model(f'{save_path}/policy_{model_num}_epoch{i+1:04d}.pth')
 
                     if win_ratio > self.best_win_ratio:
                         print("[Best Policy]")
                         logging.info("[Best Policy]")
                         self.best_win_ratio = win_ratio
-                        self.policy_value_net.save_model(f'{save_path}/policy_best_epoch{i+1:04d}.pth')
+                        self.policy_value_net.save_model(f'{save_path}/policy_{model_num}_best_epoch{i+1:04d}.pth')
 
                         if (self.best_win_ratio == 1.0 and
                                 self.pure_mcts_playout_num < 5000):
@@ -266,6 +268,6 @@ class TrainPipeline():
 if __name__ == '__main__':
     os.makedirs(save_path, exist_ok=True)
     os.makedirs(log_path, exist_ok=True)
-    logging.basicConfig(filename=f'{log_path}/log', level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+    logging.basicConfig(filename=f'{log_path}/log_{model_num}', level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
     training_pipeline = TrainPipeline()
     training_pipeline.run()
