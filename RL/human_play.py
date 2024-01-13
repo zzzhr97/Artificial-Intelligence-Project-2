@@ -1,13 +1,18 @@
 # DEL
-from board import Board, Game
-from mcts_pure import MCTSPlayer as MCTS_Pure
-from mcts_alphaZero import MCTSPlayer
+from board import Board, Gomoku
+# from mcts_pure import MCTSPlayer as MCTS_Pure
+# from mcts_alphaZero import MCTSPlayer
+from player import RandomPlayer, AlphaZeroPlayer
 from PVNet import PolicyValueNet
+
+# 0 for pure, 1 for alphazero
+player = 1
 
 BLACK = -1
 WHITE = 1
 total_players = {BLACK: "BLACK", WHITE: "WHITE"}
-load_path = './RL/models/policy_best_epoch0050.pth'
+load_path = './RL/models/policy_Simple__best_epoch8350.pth'
+internal_model = 'Simple'
 
 class Human(object):
     """
@@ -20,7 +25,7 @@ class Human(object):
     def set_player_ind(self, p):
         self.player = p
 
-    def get_action(self, board):
+    def get_move(self, board):
         try:
             location = input("Your move:")
             if isinstance(location, str): 
@@ -30,8 +35,8 @@ class Human(object):
             move = (-1, -1)
         if move == (-1, -1) or move not in board.availables:
             print("invalid move")
-            move = self.get_action(board)
-        return move
+            move = self.get_move(board)
+        return move, None
 
     def __str__(self):
         return f"Human {total_players[self.player]}"
@@ -39,10 +44,9 @@ class Human(object):
 
 def run():
     n = 5
-    width, height = 15, 15
     try:
-        board = Board(width=width, height=height)
-        game = Game(board)
+        board = Board()
+        game = Gomoku(board)
 
         # ############### human VS AI ###################
         # load the trained policy_value_net in either Theano/Lasagne, PyTorch or TensorFlow
@@ -52,17 +56,17 @@ def run():
 
         # load the provided model (trained in Theano/Lasagne) into a MCTS player written in pure numpy
 
-        best_policy = PolicyValueNet(load_path=load_path)
-        mcts_player = MCTSPlayer(best_policy.policy_value_fn, c_puct=5, n_playout=1000) 
+        best_policy = PolicyValueNet(load_path=load_path, device='cuda', internal_model=internal_model)
+        mcts_player = AlphaZeroPlayer(best_policy.policy_value_fn, c_puct=5, n_play=1000) 
 
-        # # uncomment the following line to play with pure MCTS (it's much weaker even with a larger n_playout)
-        # mcts_player = MCTS_Pure(c_puct=5, n_playout=1000)
+        if player == 0:
+            mcts_player = RandomPlayer(c_puct=5, n_play=2000)
 
         # human player, input your move in the format: 2,3
         human = Human()
 
         # set start_player=0 for human first
-        game.start_play(human, mcts_player, start_player=WHITE, is_shown=1)
+        game.play_game(human, mcts_player, start_player=WHITE, is_shown=1)
     except KeyboardInterrupt:
         print('\n\rquit')
 

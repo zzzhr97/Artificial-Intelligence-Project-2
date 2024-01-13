@@ -6,7 +6,6 @@ import random
 import algorithm
 import argparse
 
-
 class Gomoku(tk.Frame):
     def __init__(self, args, master=None):
         super(Gomoku, self).__init__(master=master)
@@ -227,8 +226,8 @@ def get_args():
     parser.add_argument(
         "--device",
         type=str,
-        choices=["cpu", "gpu"],
-        default="gpu",
+        choices=["cpu", "cuda"],
+        default="cuda",
         help="the device used",
     )
 
@@ -268,6 +267,26 @@ def get_args():
         choices=["simple", "method1"],
         default="simple",
         help="the evaluation function to be used",
+    )
+
+    # RL
+    parser.add_argument(
+        "--n_play",
+        type=int,
+        default="2000",
+        help="the number of plays for self-play",
+    )
+    parser.add_argument(
+        "--load_path",
+        type=str,
+        help="the path to load the model",
+    )
+    parser.add_argument(
+        "--internal_model",
+        type=str,
+        choices=["Simple", "Res"],
+        default="Simple",
+        help="the internal model to be used in policy value network",
     )
 
     args = parser.parse_args()

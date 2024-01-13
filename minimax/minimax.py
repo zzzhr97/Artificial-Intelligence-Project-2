@@ -71,7 +71,7 @@ class minimax(ai):
         """Get the top drops in given state through evaluation function"""
         top_drops = state.legal_drops()
         if not self.args.eval_legal_drops:
-            return top_drops
+            return top_drops[:self.args.n]
 
         drop_value = []
         for drop in top_drops:

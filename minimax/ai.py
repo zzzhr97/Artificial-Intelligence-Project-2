@@ -29,7 +29,7 @@ class State(object):
             self.adjacent_locations = np.zeros_like(self.board)
 
         # update adjacent locations
-        #drops = []
+        # drops = []
         # _set_loc = lambda x, y: \
         #     self.adjacent_locations.__setitem__((x, y), 1) \
         #     if 0 <= x < len(self.board) and 0 <= y < len(self.board) else None

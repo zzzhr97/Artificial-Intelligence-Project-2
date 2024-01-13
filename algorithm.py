@@ -1,6 +1,8 @@
 import minimax.minimax as minimax
-import RL.rl as rl
 import numpy as np
+import sys
+sys.path.append('./RL/')
+import RL.rl as rl
 
 def robot(args, chessboard, robot_color, last_drop):
     # chessboard    a 15*15 ndarray, 0 is empty, -1 is black, 1 is white

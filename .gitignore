@@ -9,3 +9,5 @@ play.bat
 logs/
 models/
 .DS_Store
+RL12/
+scripts/play*

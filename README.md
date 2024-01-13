@@ -39,6 +39,10 @@
   - *v1.0.1*:
     - Modify `README.md` and modify some codes in Minimax.
     - Add `.gitattributes`.
+  - *v1.0.2*:
+    - Improve RL part.
+    - Add 8-connectivity to RL.
+    - Add `config.ini` to control the training process of RL.
 
 ## 参考
 [Issue 25](https://github.com/junxiaosong/AlphaZero_Gomoku/issues/25)
