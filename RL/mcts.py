@@ -45,9 +45,9 @@ class TreeNode(object):
         Select move by UCB.
 
         Return: 
-        - A tuple of (action, next_node)
+        - A tuple of (move, next_node)
         """
-        return max(self.children.items(), key=lambda act_node: act_node[1].get_UCB(c_puct))
+        return max(self.children.items(), key=lambda move_node: move_node[1].get_UCB(c_puct))
 
     def update(self, leaf_value):
         """
@@ -183,8 +183,9 @@ class MCTS(object):
 
 class AlphaZeroTree(MCTS):
     """An implementation of alphaZero tree."""
-    def __init__(self, policy_value_fn, c_puct=5, n_play=10000):
+    def __init__(self, policy_value_fn, c_puct=5, n_play=10000, k=0):
         super().__init__(policy_value_fn, c_puct, n_play)
+        self.k = k
 
     def get_leaf_value(self, board, end, winner):
         """
@@ -218,17 +219,16 @@ class AlphaZeroTree(MCTS):
         """
         self.simulate(board)
         move_visits = [(move, node.N) for move, node in self.root.children.items()]
-        moves, visits = zip(*move_visits)
+        moves, visits = self.mask(board, move_visits)
+
+        print(moves, visits)
+
+        # moves, visits = zip(*move_visits)
         move_probs = self.softmax(1.0/temperature * np.log(np.array(visits) + 1e-10))
-
-        # extra
-        moves, move_probs = self.mask(board, zip(moves, move_probs))
-        move_probs = self.softmax(1.0/temperature * np.log(np.array(move_probs) + 1e-10))
-
         return moves, move_probs
     
     def mask(self, board, move_probs):
-        mask_matrix = np.full((15, 15), 0)
+        mask_matrix = np.full((15, 15), self.k)
         for drop in board.drops:
             self._set_loc(mask_matrix, drop[0]+1, drop[1])
             self._set_loc(mask_matrix, drop[0]-1, drop[1])

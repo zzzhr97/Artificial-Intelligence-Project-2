@@ -26,16 +26,19 @@ class AlphaZeroPlayer(player):
             c_puct=5, 
             n_play=2000, 
             dirichlet_alpha=0.3,
-            is_selfplay=0):
+            is_selfplay=0,
+            k=0):
         super().__init__()
-        self.mcts = AlphaZeroTree(policy_value_function, c_puct, n_play)
+        self.mcts = AlphaZeroTree(policy_value_function, c_puct, n_play, k)
         self.is_selfplay = is_selfplay
         self.dirichlet_alpha = dirichlet_alpha
+        self.k = k
         print("Alpha Zero Player: "
             f"[c_puct: {c_puct}] "
             f"[n_play: {n_play}] "
             f"[is_selfplay: {is_selfplay}] "
             f"[dirichlet_alpha: {self.dirichlet_alpha}] "
+            f"[k: {k}] "
         )
 
     def get_move(self, board, temperature=1e-3):

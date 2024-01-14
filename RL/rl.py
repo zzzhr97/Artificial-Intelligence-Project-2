@@ -5,9 +5,18 @@ import random
 
 class rl(object):
 
-    def __init__(self, args, chessboard, robot_color, last_drop):
-        best_policy = PolicyValueNet(load_path=args.load_path, device=args.device, internal_model=args.internal_model)
-        self.alphazero_player = AlphaZeroPlayer(best_policy.policy_value_fn, c_puct=5, n_play=args.n_play)
+    def __init__(self, args):
+        best_policy = PolicyValueNet(
+            load_path=args.load_path, 
+            device=args.device, 
+            internal_model=args.internal_model, 
+            k=args.k)
+        self.alphazero_player = AlphaZeroPlayer(
+            best_policy.policy_value_fn, 
+            c_puct=5, n_play=args.n_play, 
+            k=args.k)
+
+    def reset(self, chessboard, robot_color, last_drop):
         self.board = Board(robot_color, chessboard, last_drop)
 
     def get_best_drop(self):
@@ -27,7 +36,7 @@ class rl(object):
         print(move)
         return move
         
-def get_drop(args, chessboard, robot_color, last_drop):
+def get_drop(args, chessboard, robot_color, last_drop, rl_robot):
     """Get a drop from ai-RL"""
-    robot = rl(args, chessboard, robot_color, last_drop)
-    return robot.get_best_drop()
+    rl_robot.reset(chessboard, robot_color, last_drop)
+    return rl_robot.get_best_drop()

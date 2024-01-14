@@ -60,7 +60,8 @@ class RL_training():
         self.policy_value_net = PolicyValueNet(
             load_path=self.load_path, 
             device=self.device, 
-            internal_model=self.model_name)
+            internal_model=self.model_name,
+            k=self.k)
         
         # AlphaZero player
         self.alphazero_player = AlphaZeroPlayer(
@@ -94,6 +95,7 @@ class RL_training():
         self.n_game_per_batch = int(args['n_game_per_batch'])
         self.kl_targ = float(args['kl_targ'])
         self.dirichlet_alpha = float(args['dirichlet_alpha'])
+        self.k = float(args['k'])
 
         self.eval_every = int(args['eval_every'])
 
@@ -166,7 +168,7 @@ class RL_training():
         """
         extend_data = []
         for state, mcts_porb, winner in play_data:
-            for i in [1, 2, 3, 4]:
+            for i in [1, 2, 3]:
 
                 # rotate counterclockwise
                 equi_state = np.array([np.rot90(layer, i) for layer in state])

@@ -8,9 +8,10 @@ from network import SimpleNet, SimpleResNet
 
 class PolicyValueNet():
     """Policy Value Network"""
-    def __init__(self, load_path=None, device='cuda', internal_model='Res', weight_decay=1e-4):
+    def __init__(self, load_path=None, device='cuda', internal_model='Res', weight_decay=1e-4, k=0):
         self.device = device
         self.weight_decay = weight_decay
+        self.k = k
 
         # Network
         if internal_model == 'Res':
@@ -101,7 +102,7 @@ class PolicyValueNet():
         return move_probs, value
     
     def mask(self, board, move_probs):
-        mask_matrix = np.full((15, 15), 0)
+        mask_matrix = np.full((15, 15), 1)
         for drop in board.drops:
             self._set_loc(mask_matrix, drop[0]+1, drop[1])
             self._set_loc(mask_matrix, drop[0]-1, drop[1])

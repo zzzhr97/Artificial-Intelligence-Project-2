@@ -137,7 +137,12 @@ class Gomoku(tk.Frame):
 
     def __robot(self, *args):
         if self.player_color != self.color.get() and self.start:
-            self.__draw_piece(algorithm.robot(self.args, self.chessboard, self.color.get(), self.last_drop))
+            self.__draw_piece(algorithm.robot(
+                self.args, 
+                self.chessboard, 
+                self.color.get(), 
+                self.last_drop,
+                rl_robot))
 
     def __is_win(self, pos):
         if self.__horizontal(pos):
@@ -277,6 +282,12 @@ def get_args():
         help="the number of plays for self-play",
     )
     parser.add_argument(
+        "--k",
+        type=float,
+        default="0",
+        help="the coefficient of mask matrix",
+    )
+    parser.add_argument(
         "--load_path",
         type=str,
         help="the path to load the model",
@@ -295,6 +306,13 @@ def get_args():
 if __name__ == '__main__':
 
     args = get_args()
+
+    global rl_robot
+    rl_robot = None
+    if args.ai == 'rl':
+        from RL.rl import rl
+        rl_robot = rl(args=args)
+
     root = tk.Tk()
     app = Gomoku(args=args, master=root)
     root.mainloop()
