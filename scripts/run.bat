@@ -1,8 +1,8 @@
 python main.py ^
---ai rl ^
---depth 3 ^
+--ai minimax ^
+--depth 4 ^
 --init_n 20 ^
---n 225 ^
+--n 100 ^
 --eval_legal_drops 0 ^
 --mode method1 ^
     ^

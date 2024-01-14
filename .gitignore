@@ -11,3 +11,4 @@ models/
 .DS_Store
 RL12/
 scripts/play*
+visual/
