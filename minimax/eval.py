@@ -11,12 +11,15 @@ block_count_score = (1, 0.6, 0.2)   # Number of blocks and correspoinding influe
 empty_score = (1, 0.6, 0.8, 0.9)    # How much influence empty can make for 1, 2, 3, 4 consecutive chess cases
 
 # Weights for current color and opponent color
-current_score = (0.6, 1)    # current_color == color --> 1.0, current_color != color --> 0.6
+current_score = (0.7, 1)    # current_color == color --> 1.0, current_color != color --> 0.6
 
 def evaluate_func(state, **kwargs):
     mode = kwargs['mode']
+
+    global drops, last_evaluate, init_state
     drops = kwargs['drops']
     last_evaluate = kwargs['last_evaluate']
+    init_state = kwargs['init_state']
 
     global current_color
     current_color = state.color
@@ -25,7 +28,6 @@ def evaluate_func(state, **kwargs):
         return simple_evaluate(state, BLACK)-simple_evaluate(state, WHITE)
     elif mode=='method1':
         return method1_evaluate(state, BLACK)-method1_evaluate(state, WHITE)
-
 
 def simple_evaluate(state, color):
     """Evaluate the state using simple method"""
@@ -67,8 +69,11 @@ def simple_line_evaluate(line, color):
             consecutive = 0
     return value
 
-
 def method1_evaluate(state, color):
+    """Evaluate the state using method 1"""
+    return method1_init(state, color)
+
+def method1_init(state, color):
     """Evaluate the state using method 1"""
     size = len(state.board)
     value = 0
@@ -89,6 +94,48 @@ def method1_evaluate(state, color):
 
     return value
 
+def method1_recalculate(state, color):
+    """Evaluate the state using method 1"""
+    value = last_evaluate
+    row_idxes, col_idxes, diag_idxes, cont_diag_idxes = set(), set(), set(), set()
+
+    # calculate the index of rows, columns, diagonals and cont diagonals
+    for drop in drops:
+        i, j = drop[0], drop[1]
+        row_idxes.add(i)
+        col_idxes.add(j)
+        diag_idxes.add(j-i)
+        cont_diag_idxes.add(15-(j+i))
+
+    # recalculate row values
+    for row_idx in row_idxes:
+        init_row = init_state.board[row_idx]
+        row = state.board[row_idx]
+        value -= method1_line_evaluate(init_row, color)
+        value += method1_line_evaluate(row, color)
+
+    # recalculate column values
+    for col_idx in col_idxes:
+        init_col = init_state.board[:, col_idx]
+        col = state.board[:, col_idx]
+        value -= method1_line_evaluate(init_col, color)
+        value += method1_line_evaluate(col, color)
+
+    # recalculate diagonal values
+    for diag_idx in diag_idxes:
+        init_diag = np.diag(init_state.board, k=diag_idx)
+        diag = np.diag(state.board, k=diag_idx)
+        value -= method1_line_evaluate(init_diag, color)
+        value += method1_line_evaluate(diag, color)
+    
+    # recalculate cont diagonal values
+    for cont_diag_idx in cont_diag_idxes:
+        init_cont_diag = np.diag(np.fliplr(init_state.board), k=cont_diag_idx)
+        cont_diag = np.diag(np.fliplr(state.board), k=cont_diag_idx)
+        value -= method1_line_evaluate(init_cont_diag, color)
+        value += method1_line_evaluate(cont_diag, color)
+
+    return value
 
 def method1_line_evaluate(line, color):
     """Evaluate a line using method 1"""

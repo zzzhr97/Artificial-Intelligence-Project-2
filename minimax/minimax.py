@@ -9,7 +9,11 @@ class minimax(ai):
         super(minimax, self).__init__()
         self.init_state = State(chessboard, robot_color, last_drop, args.depth, None, None, args.shuffle)
         self.args = args
-        self.init_evaluate = evaluate_func(self.init_state, drops=None, last_evaluate=None, mode=self.args.mode)
+        self.init_evaluate = evaluate_func(self.init_state, 
+                                        drops=None, 
+                                        last_evaluate=None, 
+                                        init_state=None,
+                                        mode=self.args.mode)
 
     def get_best_drop(self):
         """Get the best drop in given init_state"""
@@ -61,6 +65,7 @@ class minimax(ai):
             value = evaluate_func(self.init_state.next(drop), 
                                 drops=[drop],
                                 last_evaluate=self.init_evaluate,
+                                init_state=self.init_state,
                                 mode=self.args.mode)
             drop_value.append([drop[0], drop[1], value])
         sorted_drop_value = sorted(drop_value, key=lambda x: x[-1], reverse=self.init_state.color == -1)
@@ -78,6 +83,7 @@ class minimax(ai):
             value = evaluate_func(state.next(drop), 
                                 drops=state.new_drops[1:]+[drop],
                                 last_evaluate=self.init_evaluate,
+                                init_state=self.init_state,
                                 mode=self.args.mode)
             drop_value.append([drop[0], drop[1], value])
         sorted_drop_value = sorted(drop_value, key=lambda x: x[-1], reverse=state.color == -1)
@@ -90,6 +96,7 @@ class minimax(ai):
             value = evaluate_func(state, 
                                 drops=state.new_drops[1:],
                                 last_evaluate=self.init_evaluate,
+                                init_state=self.init_state,
                                 mode=self.args.mode)
             # debug
             #if self.is_win(state.board, state.new_drops[-1]):
